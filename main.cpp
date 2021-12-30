@@ -16,8 +16,10 @@
 
 
 void AddMenu(HWND);
-void addBusMenu(HWND,int,wchar_t[]);
+void addBusMenu(HWND,int);
 void addTicketMenu(HWND,int);
+void addPassengerMenu(HWND,int);
+void addAboutMenu(HWND,int);
 
 //HWND bus_window,ticket_window;
 
@@ -103,8 +105,7 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
             break;
 
         case WM_DESTROY:{
-            ShowWindow(hwnd,SW_SHOW); /* send a WM_QUIT to the message queue */
-            BusMenu bm;
+            PostQuitMessage(0); /* send a WM_QUIT to the message queue */    
         }
         /*case WM_QUIT:
             ShowWindow(hwnd,SW_MAXIMIZE); */
@@ -118,17 +119,38 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
 
                 case BUSMENU:
                     {
-                        addBusMenu(hwnd,SW_SHOW,L"Bus menu is clicked");
+                        addBusMenu(hwnd,SW_SHOW);
                         addTicketMenu(hwnd,SW_HIDE);
+                        addPassengerMenu(hwnd,SW_HIDE);
+                        addAboutMenu(hwnd,SW_HIDE);
                     }
                     break;
                 
                 case TICKETMENU:
                     {
-                        addBusMenu(hwnd,SW_HIDE,L"Ticket menu is clicked");
+                        addBusMenu(hwnd,SW_HIDE);
                         addTicketMenu(hwnd,SW_SHOW);
-                        color = RGB(0,255,0);
+                        addPassengerMenu(hwnd,SW_HIDE);
+                        addAboutMenu(hwnd,SW_HIDE);
                         //MessageBoxEx(hwnd,L"Help for application",L"Ticket Menu",(UINT)MB_OK,(WORD)0);
+                    }
+                    break;
+
+                case PASSENGERMENU:
+                    {
+                        addBusMenu(hwnd,SW_HIDE);
+                        addTicketMenu(hwnd,SW_HIDE);
+                        addPassengerMenu(hwnd,SW_SHOW);
+                        addAboutMenu(hwnd,SW_HIDE);
+                    }
+                    break;
+
+                case ABOUTMENU:
+                    {
+                        addBusMenu(hwnd,SW_HIDE);
+                        addTicketMenu(hwnd,SW_HIDE);
+                        addPassengerMenu(hwnd,SW_HIDE);
+                        addAboutMenu(hwnd,SW_SHOW);
                     }
                     break;
             }
@@ -163,14 +185,16 @@ void AddMenu(HWND hwnd){
     SetMenu(hwnd,hmenu);
 }
 
-void addBusMenu(HWND hwnd,int status,wchar_t msg []){
+//function for creating bus window
+void addBusMenu(HWND hwnd,int status){
     HWND bus_window = CreateWindowEx(0,L"Static",L"",WS_VISIBLE | WS_CHILD,0,0,MAXWIDTH,MAXHEIGHT,hwnd,NULL,NULL,NULL);
 
-    CreateWindowEx(0,L"Static",msg,WS_VISIBLE | WS_CHILD,200,75,150,15,bus_window,NULL,NULL,NULL);        
+    CreateWindowEx(0,L"Static",L"Bus menu",WS_VISIBLE | WS_CHILD,200,75,150,15,bus_window,NULL,NULL,NULL);        
     ShowWindow(bus_window,status);
     ShowWindow(bus_window,status);
 }
 
+//function for creating ticket window
 void addTicketMenu(HWND hwnd,int status){
     HWND ticket_window = CreateWindowEx(0,L"Static",L"",WS_VISIBLE | WS_CHILD,0,0,MAXWIDTH,MAXHEIGHT,hwnd,NULL,NULL,NULL);
 
@@ -178,6 +202,28 @@ void addTicketMenu(HWND hwnd,int status){
     ShowWindow(ticket_window,status);
     ShowWindow(ticket_window,status);
 }
+
+//function for creating passenger window
+void addPassengerMenu(HWND hwnd,int status){
+    HWND passenger_window = CreateWindowEx(0,L"Static",L"",WS_VISIBLE | WS_CHILD,0,0,MAXWIDTH,MAXHEIGHT,hwnd,NULL,NULL,NULL);
+
+    CreateWindowEx(0,L"Static",L"Passenger menu",WS_VISIBLE | WS_CHILD,200,275,150,15,passenger_window,NULL,NULL,NULL);        
+    ShowWindow(passenger_window,status);
+    ShowWindow(passenger_window,status);
+}
+
+//function for creating passenger window
+void addAboutMenu(HWND hwnd,int status){
+    HWND about_window = CreateWindowEx(0,L"Static",L"",WS_VISIBLE | WS_CHILD,0,0,MAXWIDTH,MAXHEIGHT,hwnd,NULL,NULL,NULL);
+
+    wchar_t about[] = L"This is bus reservation system\n"
+                      L"This is developed by rushi";
+
+    CreateWindowEx(0,L"Static",about,WS_VISIBLE | WS_CHILD,100,80,700,500,about_window,NULL,NULL,NULL);        
+    ShowWindow(about_window,status);
+    ShowWindow(about_window,status);
+}
+
 
 
 
