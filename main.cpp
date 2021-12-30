@@ -1,8 +1,6 @@
-#if defined(UNICODE) && !defined(_UNICODE)
-    #define _UNICODE
-#elif defined(_UNICODE) && !defined(UNICODE)
-    #define UNICODE
-#endif
+#ifndef UNICODE
+#define UNICODE
+#endif 
 
 #include <tchar.h>
 #include <windows.h>
@@ -13,15 +11,22 @@
 #define TICKETMENU 303
 #define HELPMENU 304
 #define ABOUTMENU 308
+#define MAXWIDTH 900
+#define MAXHEIGHT 700
+
+
+void AddMenu(HWND);
+void addBusMenu(HWND,int,wchar_t[]);
+void addTicketMenu(HWND,int);
+
+//HWND bus_window,ticket_window;
 
 HMENU hmenu;
-void AddMenu(HWND);
-
 /*  Declare Windows procedure  */
 LRESULT CALLBACK WindowProcedure (HWND, UINT, WPARAM, LPARAM);
 
 /*  Make the class name into a global variable  */
-TCHAR szClassName[ ] = _T("Bus Reservation System");
+wchar_t szClassName[] = L"Bus Reservation System";
 
 int WINAPI WinMain (HINSTANCE hThisInstance,
                      HINSTANCE hPrevInstance,
@@ -57,12 +62,12 @@ int WINAPI WinMain (HINSTANCE hThisInstance,
     hwnd = CreateWindowEx (
            0,                   /* Extended possibilites for variation */
            szClassName,         /* Classname */
-           _T("Bus Reservation System"),       /* Title Text */
+           L"Bus Reservation System",       /* Title Text */
            WS_OVERLAPPEDWINDOW, /* default window */
            CW_USEDEFAULT,       /* Windows decides the position */
            CW_USEDEFAULT,       /* where the window ends up on the screen */
-           700,                 /* The programs width */
-           500,                 /* and height in pixels */
+           MAXWIDTH,                 /* The programs width */
+           MAXHEIGHT,                 /* and height in pixels */
            HWND_DESKTOP,        /* The window is a child-window to desktop */
            NULL,                /* No menu */
            hThisInstance,       /* Program Instance handler */
@@ -90,6 +95,7 @@ int WINAPI WinMain (HINSTANCE hThisInstance,
 
 LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+    COLORREF color = RGB(135,205,235);
     switch (message)                  /* handle the messages */
     {
         case WM_CREATE:
@@ -107,7 +113,23 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
         case WM_COMMAND:{
             switch(wParam){
                 case HELPMENU:
-                    MessageBoxEx(hwnd,"Help for application","Help",(UINT)MB_OK,(WORD)0);
+                    MessageBoxEx(hwnd,L"Help for application",L"Help",(UINT)MB_OK,(WORD)0);
+                    break;
+
+                case BUSMENU:
+                    {
+                        addBusMenu(hwnd,SW_SHOW,L"Bus menu is clicked");
+                        addTicketMenu(hwnd,SW_HIDE);
+                    }
+                    break;
+                
+                case TICKETMENU:
+                    {
+                        addBusMenu(hwnd,SW_HIDE,L"Ticket menu is clicked");
+                        addTicketMenu(hwnd,SW_SHOW);
+                        color = RGB(0,255,0);
+                        //MessageBoxEx(hwnd,L"Help for application",L"Ticket Menu",(UINT)MB_OK,(WORD)0);
+                    }
                     break;
             }
         }
@@ -117,8 +139,8 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
         {
             HDC hdcStatic = (HDC) wParam;
             SetTextColor(hdcStatic, RGB(0,0,0));
-            SetBkColor(hdcStatic, RGB(135,205,235));
-            return (INT_PTR)CreateSolidBrush(RGB(135,205,235));
+            SetBkColor(hdcStatic, color);
+            return (INT_PTR)CreateSolidBrush(color);
                 // color_changer(hMainWindow,0,0,0);
         }
 
@@ -132,11 +154,31 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
 void AddMenu(HWND hwnd){
     hmenu = CreateMenu();
 
-    AppendMenu(hmenu,MF_STRING,BUSMENU,"Bus");
-    AppendMenu(hmenu,MF_STRING,PASSENGERMENU,"Passenger");
-    AppendMenu(hmenu,MF_STRING,TICKETMENU,"Ticket");
-    AppendMenu(hmenu,MF_STRING,HELPMENU,"Help");
-    AppendMenu(hmenu,MF_STRING,ABOUTMENU,"About Us");
+    AppendMenu(hmenu,MF_STRING,BUSMENU,L"Bus");
+    AppendMenu(hmenu,MF_STRING,PASSENGERMENU,L"Passenger");
+    AppendMenu(hmenu,MF_STRING,TICKETMENU,L"Ticket");
+    AppendMenu(hmenu,MF_STRING,HELPMENU,L"Help");
+    AppendMenu(hmenu,MF_STRING,ABOUTMENU,L"About Us");
 
     SetMenu(hwnd,hmenu);
 }
+
+void addBusMenu(HWND hwnd,int status,wchar_t msg []){
+    HWND bus_window = CreateWindowEx(0,L"Static",L"",WS_VISIBLE | WS_CHILD,0,0,MAXWIDTH,MAXHEIGHT,hwnd,NULL,NULL,NULL);
+
+    CreateWindowEx(0,L"Static",msg,WS_VISIBLE | WS_CHILD,200,75,150,15,bus_window,NULL,NULL,NULL);        
+    ShowWindow(bus_window,status);
+    ShowWindow(bus_window,status);
+}
+
+void addTicketMenu(HWND hwnd,int status){
+    HWND ticket_window = CreateWindowEx(0,L"Static",L"",WS_VISIBLE | WS_CHILD,0,0,MAXWIDTH,MAXHEIGHT,hwnd,NULL,NULL,NULL);
+
+    CreateWindowEx(0,L"Static",L"Ticket menu",WS_VISIBLE | WS_CHILD,200,175,150,15,ticket_window,NULL,NULL,NULL);        
+    ShowWindow(ticket_window,status);
+    ShowWindow(ticket_window,status);
+}
+
+
+
+
