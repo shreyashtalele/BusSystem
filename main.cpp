@@ -1,10 +1,10 @@
 #ifndef UNICODE
 #define UNICODE
-#endif 
+#endif
 
 #include <tchar.h>
 #include <windows.h>
-#include "include/BusMenu.h"
+#include "include\DatabaseConnection.h"
 
 #define BUSMENU 301
 #define PASSENGERMENU 302
@@ -105,7 +105,7 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
             break;
 
         case WM_DESTROY:{
-            PostQuitMessage(0); /* send a WM_QUIT to the message queue */    
+            PostQuitMessage(0); /* send a WM_QUIT to the message queue */
         }
         /*case WM_QUIT:
             ShowWindow(hwnd,SW_MAXIMIZE); */
@@ -123,9 +123,10 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
                         addTicketMenu(hwnd,SW_HIDE);
                         addPassengerMenu(hwnd,SW_HIDE);
                         addAboutMenu(hwnd,SW_HIDE);
+                        DatabaseConnection dc;
                     }
                     break;
-                
+
                 case TICKETMENU:
                     {
                         addBusMenu(hwnd,SW_HIDE);
@@ -189,7 +190,7 @@ void AddMenu(HWND hwnd){
 void addBusMenu(HWND hwnd,int status){
     HWND bus_window = CreateWindowEx(0,L"Static",L"",WS_VISIBLE | WS_CHILD,0,0,MAXWIDTH,MAXHEIGHT,hwnd,NULL,NULL,NULL);
 
-    CreateWindowEx(0,L"Static",L"Bus menu",WS_VISIBLE | WS_CHILD,200,75,150,15,bus_window,NULL,NULL,NULL);        
+    CreateWindowEx(0,L"Static",L"Bus menu",WS_VISIBLE | WS_CHILD,200,75,150,15,bus_window,NULL,NULL,NULL);
     ShowWindow(bus_window,status);
     ShowWindow(bus_window,status);
 }
@@ -198,7 +199,7 @@ void addBusMenu(HWND hwnd,int status){
 void addTicketMenu(HWND hwnd,int status){
     HWND ticket_window = CreateWindowEx(0,L"Static",L"",WS_VISIBLE | WS_CHILD,0,0,MAXWIDTH,MAXHEIGHT,hwnd,NULL,NULL,NULL);
 
-    CreateWindowEx(0,L"Static",L"Ticket menu",WS_VISIBLE | WS_CHILD,200,175,150,15,ticket_window,NULL,NULL,NULL);        
+    CreateWindowEx(0,L"Static",L"Ticket menu",WS_VISIBLE | WS_CHILD,200,175,150,15,ticket_window,NULL,NULL,NULL);
     ShowWindow(ticket_window,status);
     ShowWindow(ticket_window,status);
 }
@@ -207,7 +208,7 @@ void addTicketMenu(HWND hwnd,int status){
 void addPassengerMenu(HWND hwnd,int status){
     HWND passenger_window = CreateWindowEx(0,L"Static",L"",WS_VISIBLE | WS_CHILD,0,0,MAXWIDTH,MAXHEIGHT,hwnd,NULL,NULL,NULL);
 
-    CreateWindowEx(0,L"Static",L"Passenger menu",WS_VISIBLE | WS_CHILD,200,275,150,15,passenger_window,NULL,NULL,NULL);        
+    CreateWindowEx(0,L"Static",L"Passenger menu",WS_VISIBLE | WS_CHILD,200,275,150,15,passenger_window,NULL,NULL,NULL);
     ShowWindow(passenger_window,status);
     ShowWindow(passenger_window,status);
 }
@@ -219,7 +220,7 @@ void addAboutMenu(HWND hwnd,int status){
     wchar_t about[] = L"This is bus reservation system\n"
                       L"This is developed by rushi";
 
-    CreateWindowEx(0,L"Static",about,WS_VISIBLE | WS_CHILD,100,80,700,500,about_window,NULL,NULL,NULL);        
+    CreateWindowEx(0,L"Static",about,WS_VISIBLE | WS_CHILD,100,80,700,500,about_window,NULL,NULL,NULL);
     ShowWindow(about_window,status);
     ShowWindow(about_window,status);
 }
