@@ -6,13 +6,15 @@
 #include <windows.h>
 #include "include\DatabaseConnection.h"
 
+#define MAXWIDTH 900
+#define MAXHEIGHT 700
+
 #define BUSMENU 301
 #define PASSENGERMENU 302
 #define TICKETMENU 303
 #define HELPMENU 304
-#define ABOUTMENU 308
-#define MAXWIDTH 900
-#define MAXHEIGHT 700
+#define ABOUTMENU 305
+#define BUS_BUTTON_SEARCH 306
 
 
 void AddMenu(HWND);
@@ -66,8 +68,8 @@ int WINAPI WinMain (HINSTANCE hThisInstance,
            szClassName,         /* Classname */
            L"Bus Reservation System",       /* Title Text */
            WS_OVERLAPPEDWINDOW, /* default window */
-           CW_USEDEFAULT,       /* Windows decides the position */
-           CW_USEDEFAULT,       /* where the window ends up on the screen */
+           300,       /* Windows decides the position */
+           100,       /* where the window ends up on the screen */
            MAXWIDTH,                 /* The programs width */
            MAXHEIGHT,                 /* and height in pixels */
            HWND_DESKTOP,        /* The window is a child-window to desktop */
@@ -131,7 +133,7 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
                         addTicketMenu(hwnd,SW_HIDE);
                         addPassengerMenu(hwnd,SW_HIDE);
                         addAboutMenu(hwnd,SW_HIDE);
-                        DatabaseConnection dc = DatabaseConnection("SELECT * FROM traindata;");
+                        //DatabaseConnection dc = DatabaseConnection("SELECT * FROM traindata;");
                     }
                     break;
 
@@ -162,6 +164,12 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
                         addAboutMenu(hwnd,SW_SHOW);
                     }
                     break;
+
+                case BUS_BUTTON_SEARCH:
+                    {
+                        MessageBoxEx(hwnd,L"Button is clicked",L"Trail",(UINT)MB_OK,(WORD)0);
+                    }
+                    break;
             }
         }
             break;
@@ -170,10 +178,42 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
         {
             HDC hdcStatic = (HDC) wParam;
             SetTextColor(hdcStatic, RGB(0,0,0));
-            SetBkColor(hdcStatic, color);
-            return (INT_PTR)CreateSolidBrush(color);
+            SetBkColor(hdcStatic, RGB(247,127,0));
+            return (INT_PTR)CreateSolidBrush(RGB(247,127,0));
                 // color_changer(hMainWindow,0,0,0);
         }
+        break;
+
+        case WM_CTLCOLORBTN:
+        {
+            HDC hdcStatic = (HDC) wParam;
+            SetTextColor(hdcStatic, RGB(0,0,0));
+            SetBkColor(hdcStatic, RGB(247,127,0));
+            return (INT_PTR)CreateSolidBrush(RGB(247,127,0));
+        }
+        break;
+
+        case WM_CTLCOLOREDIT:
+        {
+            HDC hdcStatic = (HDC) wParam;
+            SetTextColor(hdcStatic, RGB(0,0,0));
+            SetBkColor(hdcStatic, RGB(247,127,0));
+            return (INT_PTR)CreateSolidBrush(RGB(247,127,0));
+        }
+        break;
+
+        case WM_PAINT:
+        {
+            PAINTSTRUCT ps;
+            HDC hdc = BeginPaint(hwnd, &ps);
+
+
+
+            FillRect(hdc, &ps.rcPaint, CreateSolidBrush(RGB(252,191,73)));
+
+            EndPaint(hwnd, &ps);
+        }
+        break;
 
         default:                      /* for messages that we don't deal with */
             return DefWindowProc (hwnd, message, wParam, lParam);
@@ -196,16 +236,18 @@ void AddMenu(HWND hwnd){
 
 //function for creating bus window
 void addBusMenu(HWND hwnd,int status){
-    HWND bus_window = CreateWindowEx(0,L"Static",L"",WS_VISIBLE | WS_CHILD,0,0,MAXWIDTH,MAXHEIGHT,hwnd,NULL,NULL,NULL);
+    HWND bus_window = CreateWindowEx(0,szClassName,L"",WS_VISIBLE | WS_CHILD,0,0,MAXWIDTH,MAXHEIGHT,hwnd,NULL,NULL,NULL);
 
-    CreateWindowEx(0,L"Static",L"Bus menu",WS_VISIBLE | WS_CHILD,200,75,150,15,bus_window,NULL,NULL,NULL);
+    CreateWindowEx(0,L"Static",L"Bus menu",WS_VISIBLE | WS_CHILD ,200,75,150,15,bus_window,NULL,NULL,NULL);
+    CreateWindowEx(0,L"Edit",L"Edit",WS_VISIBLE | WS_CHILD,450,10,100,25,bus_window,(HMENU)BUS_BUTTON_SEARCH,NULL,NULL);
+    CreateWindowEx(0,L"Button",L"Search",WS_VISIBLE | WS_CHILD,450,50,100,25,bus_window,(HMENU)BUS_BUTTON_SEARCH,NULL,NULL);
     ShowWindow(bus_window,status);
     ShowWindow(bus_window,status);
 }
 
 //function for creating ticket window
 void addTicketMenu(HWND hwnd,int status){
-    HWND ticket_window = CreateWindowEx(0,L"Static",L"",WS_VISIBLE | WS_CHILD,0,0,MAXWIDTH,MAXHEIGHT,hwnd,NULL,NULL,NULL);
+    HWND ticket_window = CreateWindowEx(0,szClassName,L"",WS_VISIBLE | WS_CHILD,0,0,MAXWIDTH,MAXHEIGHT,hwnd,NULL,NULL,NULL);
 
     CreateWindowEx(0,L"Static",L"Ticket menu",WS_VISIBLE | WS_CHILD,200,175,150,15,ticket_window,NULL,NULL,NULL);
     ShowWindow(ticket_window,status);
@@ -214,7 +256,7 @@ void addTicketMenu(HWND hwnd,int status){
 
 //function for creating passenger window
 void addPassengerMenu(HWND hwnd,int status){
-    HWND passenger_window = CreateWindowEx(0,L"Static",L"",WS_VISIBLE | WS_CHILD,0,0,MAXWIDTH,MAXHEIGHT,hwnd,NULL,NULL,NULL);
+    HWND passenger_window = CreateWindowEx(0,szClassName,L"",WS_VISIBLE | WS_CHILD,0,0,MAXWIDTH,MAXHEIGHT,hwnd,NULL,NULL,NULL);
 
     CreateWindowEx(0,L"Static",L"Passenger menu",WS_VISIBLE | WS_CHILD,200,275,150,15,passenger_window,NULL,NULL,NULL);
     ShowWindow(passenger_window,status);
@@ -223,7 +265,7 @@ void addPassengerMenu(HWND hwnd,int status){
 
 //function for creating passenger window
 void addAboutMenu(HWND hwnd,int status){
-    HWND about_window = CreateWindowEx(0,L"Static",L"",WS_VISIBLE | WS_CHILD | WS_VSCROLL,0,0,MAXWIDTH,MAXHEIGHT,hwnd,NULL,NULL,NULL);
+    HWND about_window = CreateWindowEx(0,szClassName,L"",WS_VISIBLE | WS_CHILD | WS_VSCROLL,0,0,MAXWIDTH,MAXHEIGHT,hwnd,NULL,NULL,NULL);
 
     wchar_t about[] = L"This is bus reservation system\n"
                       L"This is developed by rushi";
