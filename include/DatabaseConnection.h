@@ -5,13 +5,16 @@
 class DatabaseConnection
 {
     public:
-        DatabaseConnection();
+        DatabaseConnection(char *);
         virtual ~DatabaseConnection();
 
     protected:
 
     private:
         MYSQL* conn;
+        MYSQL_ROW row;
+        MYSQL_RES *res;
+        int qstate;
 };
 
 #endif // DATABASECONNECTION_H
