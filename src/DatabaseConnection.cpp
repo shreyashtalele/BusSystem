@@ -3,14 +3,31 @@
 
 using namespace std;
 
-DatabaseConnection::DatabaseConnection()
+DatabaseConnection::DatabaseConnection(char* query)
 {
     conn = mysql_init(0);
     conn = mysql_real_connect(conn,"127.0.0.1","rushi","Rushi_1192#","ttms",3306,NULL,0);
-    if(conn)
+    if(conn){
         cout<<"Connected";
-    else
-        cout << "Not connected" << endl;
+
+		qstate = mysql_query(conn, query);
+		if (!qstate)
+		{
+			res = mysql_store_result(conn);
+			while (row = mysql_fetch_row(res))
+			{
+				cout<<"\n"<<row[0]<<row[1]<<row[2];
+			}
+		}
+		else
+		{
+			cout << "\nQuery failed: " << mysql_error(conn) << endl;
+		}
+	}
+	else {
+		cout<<"Connection to database has failed!";
+	}
+
     //ctor
 }
 
