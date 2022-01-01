@@ -98,6 +98,14 @@ int WINAPI WinMain (HINSTANCE hThisInstance,
 LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     COLORREF color = RGB(135,205,235);
+    SCROLLINFO si;
+
+    // These variables are required to display text.
+    static int xClient;     // width of client area
+    static int yClient;     // height of client area
+    static int yChar; // vertical scrolling unit
+    static int yPos;  // current vertical scrolling position
+
     switch (message)                  /* handle the messages */
     {
         case WM_CREATE:
@@ -123,7 +131,7 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
                         addTicketMenu(hwnd,SW_HIDE);
                         addPassengerMenu(hwnd,SW_HIDE);
                         addAboutMenu(hwnd,SW_HIDE);
-                        DatabaseConnection dc;
+                        DatabaseConnection dc = DatabaseConnection("SELECT * FROM traindata;");
                     }
                     break;
 
@@ -215,12 +223,15 @@ void addPassengerMenu(HWND hwnd,int status){
 
 //function for creating passenger window
 void addAboutMenu(HWND hwnd,int status){
-    HWND about_window = CreateWindowEx(0,L"Static",L"",WS_VISIBLE | WS_CHILD,0,0,MAXWIDTH,MAXHEIGHT,hwnd,NULL,NULL,NULL);
+    HWND about_window = CreateWindowEx(0,L"Static",L"",WS_VISIBLE | WS_CHILD | WS_VSCROLL,0,0,MAXWIDTH,MAXHEIGHT,hwnd,NULL,NULL,NULL);
 
     wchar_t about[] = L"This is bus reservation system\n"
                       L"This is developed by rushi";
 
-    CreateWindowEx(0,L"Static",about,WS_VISIBLE | WS_CHILD,100,80,700,500,about_window,NULL,NULL,NULL);
+    CreateWindowEx(0,L"Static",about,WS_VISIBLE | WS_CHILD,100,80,700,800,about_window,NULL,NULL,NULL);
+
+    ShowScrollBar(about_window,SB_VERT,TRUE);
+
     ShowWindow(about_window,status);
     ShowWindow(about_window,status);
 }
