@@ -4,6 +4,7 @@
 
 #include <tchar.h>
 #include <windows.h>
+#include <iostream>
 #include "include\DatabaseConnection.h"
 
 #define MAXWIDTH 900
@@ -16,6 +17,7 @@
 #define ABOUTMENU 305
 #define BUS_BUTTON_SEARCH 306
 
+using namespace std;
 
 void AddMenu(HWND);
 void addBusMenu(HWND,int);
@@ -26,6 +28,15 @@ void addAboutMenu(HWND,int);
 //HWND bus_window,ticket_window;
 
 HMENU hmenu;
+HWND hedit;
+const wchar_t *GetWC(const char *c)
+{
+    const size_t cSize = strlen(c)+1;
+    wchar_t* wc = new wchar_t[cSize];
+    mbstowcs (wc, c, cSize);
+
+    return wc;
+}
 /*  Declare Windows procedure  */
 LRESULT CALLBACK WindowProcedure (HWND, UINT, WPARAM, LPARAM);
 
@@ -133,7 +144,8 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
                         addTicketMenu(hwnd,SW_HIDE);
                         addPassengerMenu(hwnd,SW_HIDE);
                         addAboutMenu(hwnd,SW_HIDE);
-                        //DatabaseConnection dc = DatabaseConnection("SELECT * FROM traindata;");
+                        DatabaseConnection dc = DatabaseConnection("SELECT * FROM traindata;");
+                        //dc.setEditText(hedit);
                     }
                     break;
 
@@ -167,7 +179,33 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
 
                 case BUS_BUTTON_SEARCH:
                     {
-                        MessageBoxEx(hwnd,L"Button is clicked",L"Trail",(UINT)MB_OK,(WORD)0);
+                        //MessageBoxEx(hwnd,L"Button is clicked",L"Trail",(UINT)MB_OK,(WORD)0);
+                        DatabaseConnection dc;
+                        MYSQL_ROW row;
+                        MYSQL_RES *res;
+                        wchar_t data;
+                        char* query = "SELECT * FROM traindata;";
+                        if(dc.conn){
+                            cout<<"Connected";
+
+                            int qstate = mysql_query(dc.conn, query);
+                            if (!qstate)
+                            {
+                                res = mysql_store_result(dc.conn);
+                                while (row = mysql_fetch_row(res))
+                                {
+                                    SetWindowText(hedit,GetWC(row[0]));
+                                }
+
+                            }
+                            else
+                            {
+                                cout << "\nQuery failed: " << mysql_error(dc.conn) << endl;
+                            }
+                        }
+                        else {
+                            cout<<"Connection to database has failed!";
+                        }
                     }
                     break;
             }
@@ -178,8 +216,8 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
         {
             HDC hdcStatic = (HDC) wParam;
             SetTextColor(hdcStatic, RGB(0,0,0));
-            SetBkColor(hdcStatic, RGB(247,127,0));
-            return (INT_PTR)CreateSolidBrush(RGB(247,127,0));
+            SetBkColor(hdcStatic, RGB(252,191,73));
+            return (INT_PTR)CreateSolidBrush(RGB(252,191,73));
                 // color_changer(hMainWindow,0,0,0);
         }
         break;
@@ -196,7 +234,7 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
         case WM_CTLCOLOREDIT:
         {
             HDC hdcStatic = (HDC) wParam;
-            SetTextColor(hdcStatic, RGB(0,0,0));
+            SetTextColor(hdcStatic, RGB(255,255,255));
             SetBkColor(hdcStatic, RGB(247,127,0));
             return (INT_PTR)CreateSolidBrush(RGB(247,127,0));
         }
@@ -239,7 +277,7 @@ void addBusMenu(HWND hwnd,int status){
     HWND bus_window = CreateWindowEx(0,szClassName,L"",WS_VISIBLE | WS_CHILD,0,0,MAXWIDTH,MAXHEIGHT,hwnd,NULL,NULL,NULL);
 
     CreateWindowEx(0,L"Static",L"Bus menu",WS_VISIBLE | WS_CHILD ,200,75,150,15,bus_window,NULL,NULL,NULL);
-    CreateWindowEx(0,L"Edit",L"Edit",WS_VISIBLE | WS_CHILD,450,10,100,25,bus_window,(HMENU)BUS_BUTTON_SEARCH,NULL,NULL);
+    hedit = CreateWindowEx(0,L"Edit",L"Edit",WS_VISIBLE | WS_CHILD,450,10,100,25,bus_window,(HMENU)BUS_BUTTON_SEARCH,NULL,NULL);
     CreateWindowEx(0,L"Button",L"Search",WS_VISIBLE | WS_CHILD,450,50,100,25,bus_window,(HMENU)BUS_BUTTON_SEARCH,NULL,NULL);
     ShowWindow(bus_window,status);
     ShowWindow(bus_window,status);
@@ -259,6 +297,7 @@ void addPassengerMenu(HWND hwnd,int status){
     HWND passenger_window = CreateWindowEx(0,szClassName,L"",WS_VISIBLE | WS_CHILD,0,0,MAXWIDTH,MAXHEIGHT,hwnd,NULL,NULL,NULL);
 
     CreateWindowEx(0,L"Static",L"Passenger menu",WS_VISIBLE | WS_CHILD,200,275,150,15,passenger_window,NULL,NULL,NULL);
+    //CreateWindowEx(0,L"Edit",L"Passenger menu",WS_VISIBLE | WS_CHILD,200,275,150,15,passenger_window,NULL,NULL,NULL);
     ShowWindow(passenger_window,status);
     ShowWindow(passenger_window,status);
 }
@@ -270,7 +309,7 @@ void addAboutMenu(HWND hwnd,int status){
     wchar_t about[] = L"This is bus reservation system\n"
                       L"This is developed by rushi";
 
-    CreateWindowEx(0,L"Static",about,WS_VISIBLE | WS_CHILD,100,80,700,800,about_window,NULL,NULL,NULL);
+    CreateWindowEx(0,L"Static",about,WS_VISIBLE | WS_CHILD,100,80,700,500,about_window,NULL,NULL,NULL);
 
     ShowScrollBar(about_window,SB_VERT,TRUE);
 
