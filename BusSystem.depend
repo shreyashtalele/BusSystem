@@ -1,11 +1,12 @@
 # depslib dependency file v1.0
-1641046174 source:f:\github\bussystem\main.cpp
+1641094034 source:f:\github\bussystem\main.cpp
 	<tchar.h>
 	<windows.h>
 	"include\DatabaseConnection.h"
 
-1641035547 f:\github\bussystem\include\databaseconnection.h
+1641099901 f:\github\bussystem\include\databaseconnection.h
 	<mysql.h>
+	<windows.h>
 
 1625151230 c:\program files\mysql\mysql server 8.0\include\mysql.h
 	<stdbool.h>
@@ -57,7 +58,7 @@
 
 1625151230 c:\program files\mysql\mysql server 8.0\include\errmsg.h
 
-1641036960 source:f:\github\bussystem\src\databaseconnection.cpp
+1641099945 source:f:\github\bussystem\src\databaseconnection.cpp
 	"DatabaseConnection.h"
 	<iostream>
 
