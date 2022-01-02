@@ -35,3 +35,8 @@ DatabaseConnection::~DatabaseConnection()
 {
     //dtor
 }
+
+DatabaseConnection::DatabaseConnection(){
+    conn = mysql_init(0);
+    conn = mysql_real_connect(conn,"127.0.0.1","rushi","Rushi_1192#","ttms",3306,NULL,0);
+}
